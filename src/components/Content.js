@@ -1,5 +1,5 @@
 import React from 'react';
-import MyContent from './MyContext';// apagar comem
+import MyContent from './MyContext';
 
 function Content() {
   return (
