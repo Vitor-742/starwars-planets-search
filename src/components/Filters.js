@@ -13,7 +13,14 @@ function Filters() {
     setFilterByNumericValues,
   } = useContext(MyContext);
 
-  const [inputTypePlanet, setInputTypePlanet] = useState('population');
+  const [arrayFilters, setArrayFilters] = useState([
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ]);
+  const [inputTypePlanet, setInputTypePlanet] = useState(arrayFilters[0]);
   const [inputComparisonPlanet, setInputComparisonPlanet] = useState('maior que');
   const [inputValuePlanet, setInputValuePlanet] = useState(0);
 
@@ -42,6 +49,7 @@ function Filters() {
       value: inputValuePlanet,
     };
     setFilterByNumericValues([...filterByNumericValues, filt]);
+    setArrayFilters(arrayFilters.filter((item) => item !== inputTypePlanet));
   };
 
   return (
@@ -57,11 +65,17 @@ function Filters() {
             data-testid="column-filter"
             onChange={ ({ target }) => setInputTypePlanet(target.value) }
           >
-            <option>population</option>
-            <option>orbital_period</option>
-            <option>diameter</option>
-            <option>rotation_period</option>
-            <option>surface_water</option>
+            {arrayFilters.map((filt) => <option key={ filt }>{filt}</option>)}
+            {/* { !filterByNumericValues.some((filt) => filt.column === 'population')
+            && <option>population</option>}
+            { !filterByNumericValues.some((filt) => filt.column === 'orbital_period')
+            && <option>orbital_period</option>}
+            { !filterByNumericValues.some((filt) => filt.column === 'diameter')
+            && <option>diameter</option>}
+            { !filterByNumericValues.some((filt) => filt.column === 'rotation_period')
+            && <option>rotation_period</option>}
+            { !filterByNumericValues.some((filt) => filt.column === 'surface_water')
+            && <option>surface_water</option>} */}
           </select>
           <select
             data-testid="comparison-filter"
