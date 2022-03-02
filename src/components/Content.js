@@ -1,7 +1,38 @@
-import React from 'react';
-import MyContent from './MyContext';
+import React, { useEffect, useContext } from 'react';
+import MyContext from './MyContext';
 
 function Content() {
+  const {
+    filterByName: { name },
+    filterByNumericValues,
+    setPlanets,
+    copyPlanets,
+  } = useContext(MyContext);
+
+  useEffect(() => {
+    let internCopy;
+    if (name !== '') {
+      const filterName = copyPlanets.filter((item) => item.name.includes(name));
+      setPlanets(filterName);
+      internCopy = filterName;
+    } else {
+      setPlanets(copyPlanets);
+      internCopy = copyPlanets;
+    }
+    if (filterByNumericValues.length > 0) {
+      const aux = internCopy
+        .filter((planet) => filterByNumericValues
+          .every(({ column, comparison, value }) => {
+            const newNumberColumn = Number(planet[column]);
+            const newNumberValue = Number(value);
+            if (comparison === 'igual a') return newNumberColumn === newNumberValue;
+            if (comparison === 'maior que') return newNumberColumn > newNumberValue;
+            if (comparison === 'menor que') return newNumberColumn < newNumberValue;
+            return false;
+          }));
+      setPlanets(aux);
+    }
+  }, [filterByNumericValues, name, setPlanets, copyPlanets]);
   return (
     <table border="1cm">
       <tr>
@@ -19,10 +50,10 @@ function Content() {
         <th>edited</th>
         <th>url</th>
       </tr>
-      <MyContent.Consumer>
+      <MyContext.Consumer>
         {
           (value) => (
-            value.loading && value.data.map((planet) => (
+            value.loading && value.planets.map((planet) => (
               <tr key={ planet.name }>
                 <td>{planet.name}</td>
                 <td>{planet.rotation_period}</td>
@@ -41,7 +72,7 @@ function Content() {
             ))
           )
         }
-      </MyContent.Consumer>
+      </MyContext.Consumer>
     </table>
   );
 }
