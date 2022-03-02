@@ -25,13 +25,7 @@ function Filters() {
   const [inputValuePlanet, setInputValuePlanet] = useState(0);
 
   const handleChangeInputName = ({ target }) => {
-    setInputName(target.value);// refazer essa parte para passar em todos os filtros
-    /* if (target.value !== '') {
-      const filterName = copyPlanets.filter((item) => item.name.includes(target.value));
-      setPlanets(filterName);
-    } else {
-      setPlanets(copyPlanets);
-    } */
+    setInputName(target.value);
   };
 
   useEffect(() => {
@@ -40,7 +34,8 @@ function Filters() {
       return planetsFetch;
     };
     aux();
-  }, [setCopyPlanets, setLoading, setPlanets]);
+    setInputTypePlanet(arrayFilters[0]);
+  }, [arrayFilters, setCopyPlanets, setLoading, setPlanets]);
 
   const handleClickFilter = () => {
     const filt = {
@@ -50,6 +45,23 @@ function Filters() {
     };
     setFilterByNumericValues([...filterByNumericValues, filt]);
     setArrayFilters(arrayFilters.filter((item) => item !== inputTypePlanet));
+  };
+
+  const handleClickRemoveFilter = (column) => {
+    setFilterByNumericValues(filterByNumericValues
+      .filter((item) => item.column !== column));
+    setArrayFilters([...arrayFilters, column]);
+  };
+
+  const removeAllFilters = () => {
+    setFilterByNumericValues([]);
+    setArrayFilters([
+      'population',
+      'orbital_period',
+      'diameter',
+      'rotation_period',
+      'surface_water',
+    ]);
   };
 
   return (
@@ -66,16 +78,6 @@ function Filters() {
             onChange={ ({ target }) => setInputTypePlanet(target.value) }
           >
             {arrayFilters.map((filt) => <option key={ filt }>{filt}</option>)}
-            {/* { !filterByNumericValues.some((filt) => filt.column === 'population')
-            && <option>population</option>}
-            { !filterByNumericValues.some((filt) => filt.column === 'orbital_period')
-            && <option>orbital_period</option>}
-            { !filterByNumericValues.some((filt) => filt.column === 'diameter')
-            && <option>diameter</option>}
-            { !filterByNumericValues.some((filt) => filt.column === 'rotation_period')
-            && <option>rotation_period</option>}
-            { !filterByNumericValues.some((filt) => filt.column === 'surface_water')
-            && <option>surface_water</option>} */}
           </select>
           <select
             data-testid="comparison-filter"
@@ -89,7 +91,7 @@ function Filters() {
             type="number"
             data-testid="value-filter"
             value={ inputValuePlanet }
-            onChange={ ({ target }) => setInputValuePlanet(target.value) }// colocar como 0
+            onChange={ ({ target }) => setInputValuePlanet(target.value) }
           />
           <button
             type="button"
@@ -99,6 +101,25 @@ function Filters() {
             Adicionar Filtro
 
           </button>
+          <div>
+            {filterByNumericValues.map((filt) => (
+              <section key={ filt.column } data-testid="filter">
+                <p>{`${filt.column} ${filt.comparison} ${filt.value}`}</p>
+                <button
+                  type="button"
+                  onClick={ () => handleClickRemoveFilter(filt.column) }
+                >
+                  X
+                </button>
+              </section>))}
+            <button
+              type="button"
+              data-testid="button-remove-filters"
+              onClick={ removeAllFilters }
+            >
+              Remover todas filtragens
+            </button>
+          </div>
         </div>
       )}
     </MyContext.Consumer>
